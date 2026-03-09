@@ -77,15 +77,15 @@ RUN --mount=type=cache,target=/root/.ccache \
         && cmake --install build --component CUDA --strip
 
 
-FROM base AS rocm-6
+FROM base AS rocm-7
 ENV PATH=/opt/rocm/hcc/bin:/opt/rocm/hip/bin:/opt/rocm/bin:/opt/rocm/hcc/bin:$PATH
 COPY CMakeLists.txt CMakePresets.json .
 COPY ml/backend/ggml/ggml ml/backend/ggml/ggml
 RUN --mount=type=cache,target=/root/.ccache \
-    cmake --preset 'ROCm 6' \
-        && cmake --build --preset 'ROCm 6' -- -l $(nproc) \
+    cmake --preset 'ROCm 7' \
+        && cmake --build --preset 'ROCm 7' -- -l $(nproc) \
         && cmake --install build --component HIP --strip
-RUN rm -f dist/lib/ollama/rocm/rocblas/library/*gfx90[06]*
+RUN rm -f dist/lib/ollama/rocm_v7/rocblas/library/*gfx90[06]*
 
 FROM --platform=linux/arm64 nvcr.io/nvidia/l4t-jetpack:${JETPACK5VERSION} AS jetpack-5
 ARG CMAKEVERSION
@@ -194,7 +194,7 @@ COPY --from=jetpack-5 dist/lib/ollama/ /lib/ollama/
 COPY --from=jetpack-6 dist/lib/ollama/ /lib/ollama/
 
 FROM scratch AS rocm
-COPY --from=rocm-6 dist/lib/ollama /lib/ollama
+COPY --from=rocm-7 dist/lib/ollama /lib/ollama
 
 FROM ${FLAVOR} AS archive
 COPY --from=cpu dist/lib/ollama /lib/ollama

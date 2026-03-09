@@ -16,6 +16,11 @@ docker build --build-arg FLAVOR=rocm .
 ```
 Requires buildkit enabled docker.
 
+To build the ROCm image under a separate local name, use:
+```shell
+docker buildx build --load --platform=linux/amd64 --build-arg FLAVOR=rocm -t ollama-linux-amd-apu-rocm7:local .
+```
+
 ## How to build on Podman:
 Buildah on podman just doesn't cut it, you can use "daemon-less" buildkit for this:
 ```shell
